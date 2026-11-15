@@ -23,9 +23,15 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install Dependencies & Sync Capacitor
+      - name: Install, Build Web & Prepare Capacitor
         run: |
           npm install
+          npm run build
+          # Vite ရဲ့ dist ဖိုင်များကို Capacitor မျှော်လင့်ထားသော www directory သို့ ပြောင်းရွှေ့ပေးခြင်း
+          if [ -d "dist" ]; then
+            rm -rf www
+            cp -r dist www
+          fi
           npx cap sync
 
       - name: Build Android APK
