@@ -15,7 +15,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
 
       - name: Install Dependencies & Build Web
         run: |
@@ -33,7 +33,6 @@ jobs:
 
       - name: Build Android APK
         run: |
-          cd android
           chmod +x gradlew
           ./gradlew assembleDebug
 
@@ -41,4 +40,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-debug
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: app/build/outputs/apk/debug/app-debug.apk
