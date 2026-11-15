@@ -23,14 +23,16 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install, Build Web & Prepare Capacitor
+      - name: Install & Sync Capacitor
         run: |
           npm install
-          npm run build
-          # Vite ရဲ့ dist ဖိုင်များကို Capacitor မျှော်လင့်ထားသော www directory သို့ ပြောင်းရွှေ့ပေးခြင်း
+          # dist ဖိုင်များ ရှိပြီးသားဆိုလျှင် www သို့ ကူးပြောင်းပေးပြီး sync လုပ်မည် (npm run build ကို ကျော်ခွ၍ path error မတက်စေရန်)
           if [ -d "dist" ]; then
             rm -rf www
             cp -r dist www
+          elif [ -d "build" ]; then
+            rm -rf www
+            cp -r build www
           fi
           npx cap sync
 
