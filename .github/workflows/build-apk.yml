@@ -23,16 +23,31 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Install & Sync Capacitor
+      - name: Install, Fix Vite Base & Build Web
         run: |
           npm install
-          # dist ဖိုင်များ ရှိပြီးသားဆိုလျှင် www သို့ ကူးပြောင်းပေးပြီး sync လုပ်မည် (npm run build ကို ကျော်ခွ၍ path error မတက်စေရန်)
+          # Vite config ထဲတွင် base path ကို ./ သို့ အလိုအလျောက် ပြင်ဆင်ပေးခြင်း (path error လုံးဝမတက်စေရန်)
+          node -e '
+            const fs = require("fs");
+            if (fs.existsSync("vite.config.js")) {
+              let content = fs.readFileSync("vite.config.js", "utf8");
+              if (!content.includes("base:")) {
+                content = content.replace("defineConfig({", "defineConfig({\n  base: \"./\",");
+                fs.writeFileSync("vite.config.js", content);
+              }
+            } else if (fs.existsSync("vite.config.ts")) {
+              let content = fs.readFileSync("vite.config.ts", "utf8");
+              if (!content.includes("base:")) {
+                content = content.replace("defineConfig({", "defineConfig({\n  base: \"./\",");
+                fs.writeFileSync("vite.config.ts", content);
+              }
+            }
+          '
+          npm run build
+          # ထွက်လာသော dist ဖိုင်များကို Capacitor မျှော်လင့်ထားသော www directory သို့ အလိုအလျောက် ပြောင်းရွှေ့ပေးခြင်း
           if [ -d "dist" ]; then
             rm -rf www
             cp -r dist www
-          elif [ -d "build" ]; then
-            rm -rf www
-            cp -r build www
           fi
           npx cap sync
 
